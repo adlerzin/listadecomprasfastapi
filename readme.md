@@ -29,7 +29,7 @@ Este projeto é uma API simples construída com **FastAPI** para gerenciar uma l
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/seu-repo.git
+git clone https://github.com/adlerzin/listadecomprasfastapi.git
 cd seu-repo
 
 # Crie e ative um ambiente virtual (opcional, mas recomendado)
