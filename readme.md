@@ -32,8 +32,7 @@ Este projeto é uma API simples construída com **FastAPI** para gerenciar uma l
 git clone https://github.com/adlerzin/listadecomprasfastapi.git
 cd seu-repo
 
-# Crie e ative um ambiente virtual (opcional, mas recomendado)
-python -m venv venv
+# Ative um ambiente virtual (opcional, mas recomendado)
 source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
 
