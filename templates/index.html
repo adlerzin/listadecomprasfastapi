@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lista de Compras</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background-color: #eef1f5;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 12px 16px;
+      font-size: 16px;
+      background-color: #2196F3;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #1976D2;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: #fafafa;
+      margin-bottom: 15px;
+      padding: 15px 20px;
+      border-left: 6px solid #2196F3;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    li.concluido {
+      border-left-color: #4CAF50;
+      text-decoration: line-through;
+      color: gray;
+      background-color: #f0f0f0;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .buttons button {
+      background-color: #ccc;
+      color: #333;
+    }
+
+    .buttons button:hover {
+      background-color: #bbb;
+    }
+
+    .buttons button.concluir {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .buttons button.concluir:hover {
+      background-color: #388E3C;
+    }
+
+    .buttons button.remover {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .buttons button.remover:hover {
+      background-color: #d32f2f;
+    }
+
+    .buttons button.editar {
+      background-color: #FF9800;
+      color: white;
+    }
+
+    .buttons button.editar:hover {
+      background-color: #F57C00;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lista de Compras 🛒</h1>
+
+    <div class="input-group">
+      <input type="text" id="novaTarefa" placeholder="Digite um novo item">
+      <input type="number" id="quantidade" placeholder="Quantidade">
+      <button onclick="adicionarTarefa()">➕</button>
+    </div>
+
+    <ul id="listaTarefas"></ul>
+  </div>
+
+  <script>
+    const apiUrl = 'http://localhost:8000';
+
+    async function carregarTarefas() {
+      const resposta = await fetch(`${apiUrl}/items`);
+      const tarefas = await resposta.json();
+      const lista = document.getElementById('listaTarefas');
+      lista.innerHTML = "";
+
+      for (let i = 0; i < tarefas.length; i++) {
+        const tarefa = tarefas[i];
+
+        const estadoResp = await fetch(`${apiUrl}/estado/${i}`);
+        const estado = await estadoResp.json();
+
+        const li = document.createElement("li");
+        li.className = estado === 1 ? "concluido" : "";
+        li.innerHTML = `
+          <strong>${tarefa.nome}</strong> - ${tarefa.quantidade} unidade(s)<br>
+          <small>Criado em ${tarefa.data}</small>
+          <div class="buttons">
+            <button class="editar" onclick="editarNome(${i})">Editar Nome</button>
+            <button class="remover" onclick="removerTarefa(${i})">Remover</button>
+            <button class="concluir" onclick="concluirTarefa(${i})" ${estado === 1 ? 'disabled' : ''}>
+              ${estado === 1 ? 'Concluído' : 'Concluir'}
+            </button>
+          </div>
+        `;
+        lista.appendChild(li);
+      }
+    }
+
+    async function adicionarTarefa() {
+      const input = document.getElementById("novaTarefa");
+      const input2 = document.getElementById("quantidade");
+      const nome = input.value.trim();
+      const quantidade = input2.value;
+      if (nome === "") return;
+
+      await fetch(`${apiUrl}/add?item=${encodeURIComponent(nome)}&quantidade=${encodeURIComponent(quantidade)}`, {
+        method: 'POST'
+      });
+
+      input.value = "";
+      input2.value = "";
+      carregarTarefas();
+    }
+
+    async function concluirTarefa(id) {
+      await fetch(`${apiUrl}/concluir?item_id=${id}`, {
+        method: 'POST'
+      });
+      carregarTarefas();
+    }
+
+    async function removerTarefa(id) {
+      await fetch(`${apiUrl}/deletar/${id}`, {
+        method: 'DELETE'
+      });
+      carregarTarefas();
+    }
+
+    async function editarNome(id) {
+      const valor = prompt("Qual o novo nome?");
+      if (valor !== null && valor.trim() !== "") {
+        await fetch(`${apiUrl}/editar/${id}/nome/${encodeURIComponent(valor)}`, {
+          method: 'POST'
+        });
+        carregarTarefas();
+      }
+    }
+
+    carregarTarefas();
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") adicionarTarefa();
+    });
+  </script>
+</body>
+</html>
