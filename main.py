@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from datetime import datetime
+import uvicorn
 
 # Instância do FastAPI
 app = FastAPI()
@@ -79,3 +80,6 @@ def editar_item(item_id: int, categoria: str, valor: str):
     if categoria == "nome":
         items[item_id].nome = valor
         return items[item_id].nome
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
