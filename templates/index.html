@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Adicionada para garantir o controle de escala no mobile -->
   <title>Lista de Compras</title>
   <style>
     * {
@@ -34,6 +35,7 @@
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
     input[type="text"],
@@ -43,6 +45,7 @@
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      min-width: 200px; /* Garantir um tamanho mínimo para os campos */
     }
 
     button {
@@ -93,6 +96,8 @@
     .buttons button {
       background-color: #ccc;
       color: #333;
+      width: 100%; /* Faz os botões ocuparem a largura total no mobile */
+      margin-bottom: 10px; /* Espaço entre os botões */
     }
 
     .buttons button:hover {
@@ -124,6 +129,32 @@
 
     .buttons button.editar:hover {
       background-color: #F57C00;
+    }
+
+    /* Responsividade */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .input-group {
+        flex-direction: column;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      button {
+        width: 100%;
+        min-width: unset; /* Remove o min-width em telas pequenas */
+      }
+
+      .buttons button {
+        width: 100%;
+      }
     }
   </style>
 </head>
